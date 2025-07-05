@@ -1,0 +1,132 @@
+openapi: 3.0.3
+info:
+  description: API to handle transactions
+  title: Transaction Service API
+  version: 1.0.0
+servers:
+- url: http://localhost:8081
+paths:
+  /transactions/statuses/{status}:
+    get:
+      operationId: getTransactionsByStatus
+      parameters:
+      - description: Status code to filter transactions
+        explode: false
+        in: path
+        name: status
+        required: true
+        schema:
+          type: number
+        style: simple
+      - explode: true
+        in: query
+        name: offset
+        required: false
+        schema:
+          default: 0
+          type: integer
+        style: form
+      - explode: true
+        in: query
+        name: limit
+        required: false
+        schema:
+          default: 10
+          type: integer
+        style: form
+      - explode: false
+        in: header
+        name: X-Request-ID
+        required: false
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TransactionPage"
+          description: Transactions retrieved successfully
+        "404":
+          description: No transactions found for the given status
+      summary: Get transactions by status
+      x-accepts:
+      - application/json
+  /transactions:
+    post:
+      operationId: createTransaction
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TransactionDTO"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TransactionDTO"
+          description: Transaction created successfully
+        "400":
+          description: Bad request
+        "500":
+          description: Internal server error
+      summary: Create a new transaction
+      x-content-type: application/json
+      x-accepts:
+      - application/json
+components:
+  schemas:
+    TransactionDTO:
+      example:
+        amount: 0.8008281904610115
+        id: id
+        status: 6.027456183070403
+      properties:
+        id:
+          description: Unique identifier of the transaction
+          type: string
+        amount:
+          description: Amount involved in the transaction
+          format: double
+          type: number
+        status:
+          description: Status of the transaction
+          type: number
+      required:
+      - amount
+      - status
+      type: object
+    TransactionPage:
+      example:
+        total: 100
+        offset: 0
+        limit: 10
+        count: 10
+        items:
+        - amount: 0.8008281904610115
+          id: id
+          status: 6.027456183070403
+        - amount: 0.8008281904610115
+          id: id
+          status: 6.027456183070403
+      properties:
+        total:
+          example: 100
+          type: integer
+        offset:
+          example: 0
+          type: integer
+        limit:
+          example: 10
+          type: integer
+        count:
+          example: 10
+          type: integer
+        items:
+          items:
+            $ref: "#/components/schemas/TransactionDTO"
+          type: array
+      type: object

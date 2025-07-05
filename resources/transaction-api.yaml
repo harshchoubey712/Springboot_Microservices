@@ -1,0 +1,62 @@
+openapi: 3.0.0
+info:
+  title: Transaction API
+  version: 1.0.0
+paths:
+  /transactions/statuses/{status}:
+    get:
+      summary: Get transactions by status
+      parameters:
+        - name: status
+          in: path
+          required: true
+          schema:
+            type: number
+        - name: offset
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: X-Request-ID
+          in: header
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionPage'
+components:
+  schemas:
+    TransactionPage:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/TransactionDTO'
+        count:
+          type: integer
+        offset:
+          type: integer
+        limit:
+          type: integer
+        total:
+          type: integer
+    TransactionDTO:
+      type: object
+      properties:
+        id:
+          type: string
+        amount:
+          type: number
+        status:
+          type: number
